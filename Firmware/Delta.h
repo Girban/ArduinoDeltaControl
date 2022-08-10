@@ -1,24 +1,10 @@
+#ifndef Delta_H
+#define Delta_H
 
-// Include Libraries
-#include "Arduino.h"
-#include "StepperMotor.h"
+#include <Delta.h>
 
-
-// Pin Definitions
-#define STEPPER_1_PIN_STEP	5
-#define STEPPER_1_PIN_DIR	2
-
-#define STEPPER_2_PIN_STEP	6
-#define STEPPER_2_PIN_DIR	3
-
-#define STEPPER_3_PIN_STEP	7
-#define STEPPER_3_PIN_DIR	4
-
-// CNC Enable Pin
-#define CNC_ENABLE  8   //  stepper motor enable , to active pin -> low
-
-
-class Delta {
+class Delta
+{
 	public:
 		StepperMotor stepper_1(STEPPER_1_PIN_STEP,STEPPER_1_PIN_DIR);
 		StepperMotor stepper_2(STEPPER_2_PIN_STEP,STEPPER_2_PIN_DIR);
@@ -33,8 +19,6 @@ class Delta {
 		float jointAngle_1_previous , jointAngle_2_previous , jointAngle_3_previous ;
 
 		float arms_le , biceps_lf , endEffector_beta , fixedBase_alpha ;
-
-
 
 		Delta(){
 
@@ -56,8 +40,6 @@ class Delta {
 			angle2coordinates(0,0,0);
 
 		}
-
-
 
 		void coordinates2angle(float x, float y, float z) {
 
@@ -225,6 +207,7 @@ class Delta {
 			}
 		}
 
+
 		void gotoXYZ(float x, float y, float z) {
 			jointAngle_1_previous = jointAngle_1;
 			jointAngle_2_previous = jointAngle_2;
@@ -247,93 +230,7 @@ class Delta {
 
 	private:
 
+
+
 };
-
-
-// Global variables and defines
-#define stepper_1DelayTime	1000
-#define stepper_2DelayTime	1000
-#define stepper_3DelayTime	1000
-
-#define stepper_AllDelayTime	1000
-
-// Coordinates
-float x,y,z;
-x = 0;
-y = 0;
-z = 0;
-
-
-// object initialization
-
-
-
-void setup() {
-
-	// Setup Serial which is useful for debugging
-	// Use the Serial Monitor to view printed messages
-	Serial.begin(9600);
-	while (!Serial); // wait for serial port to connect. Needed for native USB
-	Serial.println("start");
-
-	Delta DeltaRobot;
-
-	Serial.println("\n \t\t START \n\n");
-
-}
-
-void loop() {
-	Serial.println("Current Coordinates:");
-	Serial.println("\t X: %f", &x);
-	Serial.println("\t Y: %f", &y);
-	Serial.println("\t Z: %f", &z);
-	Serial.println(" ");
-
-	startUpMenu();
-
-}
-
-char startUpMenu() {
-	Serial.println("");
-
-	Serial.println(F("\n Choose : "));
-	Serial.println(F("\t (1) Test Motors"));
-	Serial.println(F("\t (2) Go to home"));
-	Serial.println(F("\t (3) Goto X, Y, Z"));
-	Serial.println(F("(menu) send anything else or press on board reset button\n"));
-
-
-	// Read data from serial monitor if received
-	while (Serial.available()) {
-		char c = Serial.read();
-		if (isAlphaNumeric(c)) {
-
-			if ( c == '1' ) {
-				Serial.println(F("\n Testing the motors: RUNNING"));
-
-				DeltaRobot.gotoXYZ(DeltaRobot.x_endEffectorcoordinate, DeltaRobot.y_endEffectorcoordinate, DeltaRobot.z_endEffectorcoordinate + 50)
-				delay(1000);
-				DeltaRobot.gotoXYZ(DeltaRobot.x_endEffectorcoordinate, DeltaRobot.y_endEffectorcoordinate, DeltaRobot.z_endEffectorcoordinate - 50)
-
-				Serial.println(F(" Testing the motors: DONE"));
-
-			} else if ( c == '2' ) {
-				Serial.println(F("\n Going Home: RUNNING"));
-				DeltaRobot.gotoXYZ(0,0,0);
-				Serial.println(F(" Going Home: DONE"));
-			} else if ( c == '3' ) {
-				Serial.println(F("\n Goto:"));
-				Serial.println(F("\t X: "));
-				Serial.println(F("\t Y: "));
-				Serial.println(F("\t Z: "));
-				Serial.println(F(" RUNNING"));
-				gotoXYZ(x,y,z);
-				Serial.println(F("\n (X,Y,Z):(%f,%f,%f) :: DONE"), &x,&y,&z);
-			} else {
-				Serial.println(F("illegal input!"));
-				return('e');
-			}
-	}
-
-
-}
+#endif //Delta_H
